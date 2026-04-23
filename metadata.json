@@ -1,0 +1,14 @@
+{
+  "name": "영업킹갓 (Sales King God)",
+  "description": "제조 영업직의 고귀한 땀방울을 AI로 승화시키는 초감각 출장 보고 시스템. '현장에서 끝내고 퇴근은 칼같이!'",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "AI 보고서 생성",
+    "영수증 OCR",
+    "액션 아이템 추적"
+  ]
+}

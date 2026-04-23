@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;900&family=JetBrains+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Pretendard", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  background-color: #0f172a;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #f8fafc;
+}
+
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bg-blobs {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.blob-1 {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 40%;
+  height: 40%;
+  background: #2563eb;
+  border-radius: 9999px;
+  mix-blend-mode: screen;
+  filter: blur(120px);
+  opacity: 0.4;
+}
+
+.blob-2 {
+  position: absolute;
+  bottom: 10%;
+  right: -5%;
+  width: 45%;
+  height: 45%;
+  background: #9333ea;
+  border-radius: 9999px;
+  mix-blend-mode: screen;
+  filter: blur(120px);
+  opacity: 0.3;
+}
+
+.blob-3 {
+  position: absolute;
+  top: 30%;
+  right: 10%;
+  width: 30%;
+  height: 30%;
+  background: #ec4899;
+  border-radius: 9999px;
+  mix-blend-mode: screen;
+  filter: blur(100px);
+  opacity: 0.2;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+

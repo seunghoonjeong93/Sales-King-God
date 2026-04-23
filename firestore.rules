@@ -1,0 +1,84 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isEmailVerified() {
+      return request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // --- Entity Validations ---
+    function isValidUser(data) {
+      return data.keys().hasAll(['email']) &&
+             data.email is string && data.email.size() <= 256 &&
+             (!data.keys().contains('name') || (data.name is string && data.name.size() <= 128)) &&
+             (!data.keys().contains('role') || (data.role is string && data.role.size() <= 50));
+    }
+
+    function isValidCustomer(data) {
+      return data.keys().hasAll(['name']) &&
+             data.name is string && data.name.size() <= 256;
+    }
+
+    function isValidReport(data) {
+      return data.keys().hasAll(['customerId', 'date', 'authorId']) &&
+             data.customerId is string && data.customerId.size() <= 128 &&
+             data.date is string && // Simplified for now, should ideally be timestamp but client might send string ISO
+             data.authorId == request.auth.uid;
+    }
+
+    function isValidActionItem(data) {
+      return data.keys().hasAll(['task', 'status', 'customerId']) &&
+             data.task is string && data.task.size() <= 500 &&
+             data.status in ['todo', 'in_progress', 'done'] &&
+             data.customerId is string && data.customerId.size() <= 128;
+    }
+
+    // --- Collections ---
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data) &&
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'role', 'department']);
+    }
+
+    match /customers/{customerId} {
+      allow list: if isSignedIn();
+      allow get: if isSignedIn();
+      allow create: if isSignedIn() && isValidCustomer(request.resource.data);
+      allow update: if isSignedIn() && isValidCustomer(request.resource.data);
+    }
+
+    match /reports/{reportId} {
+      allow list: if isSignedIn() && resource.data.authorId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.authorId == request.auth.uid;
+      allow create: if isSignedIn() && isValidReport(request.resource.data);
+      allow update: if isSignedIn() && isOwner(resource.data.authorId) && isValidReport(request.resource.data);
+      allow delete: if isOwner(resource.data.authorId);
+    }
+
+    match /actionItems/{actionItemId} {
+      allow list: if isSignedIn();
+      allow get: if isSignedIn();
+      allow create: if isSignedIn() && isValidActionItem(request.resource.data);
+      allow update: if isSignedIn() && isValidActionItem(request.resource.data);
+      allow delete: if isSignedIn(); // Simplified for collaboration
+    }
+  }
+}
